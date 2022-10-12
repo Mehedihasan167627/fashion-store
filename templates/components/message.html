@@ -1,0 +1,40 @@
+{% if messages %}
+<style>
+  .message_box {
+    width: 100%;
+    text-align: center;
+    height: 30px;
+  }
+  .success {
+    border: 1px solid var(--green);
+  }
+  .warning {
+    border: 1px solid rgb(255, 0, 0);
+  }
+
+  .toast__successText {
+    color: var(--green);
+  }
+  .toast__warnText {
+    color: rgb(255, 0, 0);
+  }
+</style>
+{%for m in messages %}
+<div
+  class="message__toast message_box {% if m.tags == 'success' %} success {% else %} warning{% endif %}"
+>
+  <button
+    class="message__close__btn"
+    style="float: right; margin-top: 5px; padding-right: 5px"
+  >
+    <ion-icon name="close-outline"></ion-icon>
+  </button>
+  <div class="toast__detail">
+    <p
+      class="toast__title {% if m.tags == 'success' %} toast__successText {% else %} toast__warnText{% endif %}"
+    >
+      {{m}}
+    </p>
+  </div>
+</div>
+{% endfor %} {% endif %}

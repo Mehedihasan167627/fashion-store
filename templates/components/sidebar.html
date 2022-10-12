@@ -1,0 +1,98 @@
+{% load static %} {% load custom_filter %} {% url 'pages:cart' as cart_page %}
+<div class="sidebar has-scrollbar" data-mobile-menu>
+  <div class="sidebar-category">
+    <div class="sidebar-top">
+      <h2 class="sidebar-title">Category</h2>
+
+      <button class="sidebar-close-btn" data-mobile-menu-close-btn>
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <ul class="sidebar-menu-category-list">
+      {% for c in sub_category_list %}
+      <li class="sidebar-menu-category">
+        <button class="sidebar-accordion-menu" data-accordion-btn>
+          <div class="menu-title-flex">
+            <p class="menu-title">{{c.name}}</p>
+          </div>
+
+          <div>
+            <ion-icon name="add-outline" class="add-icon"></ion-icon>
+            <ion-icon name="remove-outline" class="remove-icon"></ion-icon>
+          </div>
+        </button>
+
+        <ul class="sidebar-submenu-category-list" data-accordion>
+          {% for s in c.subcategory_set.all %}
+
+          <li class="sidebar-submenu-category">
+            <a
+              href="{% url 'pages:sub_category-list' s.slug %}"
+              class="sidebar-submenu-title"
+            >
+              <p class="product-name">{{s.name}}</p>
+              <data value="300" class="stock" title="Available Stock"
+                >{{s|sub_cat_pro_count}}</data
+              >
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="product-showcase">
+    <h3 class="showcase-heading">best sellers</h3>
+
+    <div class="showcase-wrapper">
+      <div class="showcase-container">
+        {% for obj in best_sellers %}
+        <div class="showcase">
+          <a
+            href="{% url 'pages:product-detail' obj.slug %}"
+            class="showcase-img-box"
+          >
+            <img
+              src="{{obj.thumbnail.url}}"
+              alt="baby fabric shoes"
+              width="75"
+              height="75"
+              class="showcase-img"
+            />
+          </a>
+
+          <div class="showcase-content">
+            <a href="{% url 'pages:product-detail' obj.slug %}">
+              <h4 class="showcase-title">{{obj.title}}</h4>
+            </a>
+
+            <div class="showcase-rating">
+              <ion-icon name="star"></ion-icon>
+              <ion-icon name="star"></ion-icon>
+              <ion-icon name="star"></ion-icon>
+              <ion-icon name="star"></ion-icon>
+              <ion-icon name="star"></ion-icon>
+            </div>
+
+            <div class="price-box">
+              {% if obj.discount_price %}
+              <p class="price">{{obj.discount_price|currency}}</p>
+              <del>{{obj.price|currency}}</del>
+              <span style="color: white; background: green; padding: 0px 5px">
+                {{obj.price|show_discount_percentage:obj.discount_price}}
+              </span>
+
+              {% else %}
+              <p class="price">{{obj.price|currency}}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

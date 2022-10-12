@@ -1,0 +1,306 @@
+{% load static %}
+
+<header>
+  
+  <div class="header-main">
+    <div class="container">
+      <a
+        href="{% url 'pages:home' %}"
+        class="header-logo"
+        style="display: flex; align-items: center"
+      >
+        <h2 style="color: white">E-STORE</h2>
+      </a>
+
+      
+
+        <div class="header-search-container">
+          <form action="{% url 'pages:product-list' %}" method="get">
+        <input
+          type="search"
+          name="qry"
+          class="search-field"
+          placeholder="search product name..."
+        />
+
+        <button class="search-btn">
+          <ion-icon name="search-outline"></ion-icon>
+        </button>
+        </form>
+      </div>
+      
+
+      <div class="header-user-actions">
+        {% if request.user.is_authenticated %}
+        <ul class="desktop-menu-category-list">
+          <li class="menu-category">
+            <a
+              class="menu-title customer__dropdown"
+              style="display: flex; color: white; align-items: center"
+            >
+              {% if request.user.username %}
+               {{request.user.username}}
+                {% else%}
+                 {{request.user.email}}
+                  {% endif %}
+              <img
+                src="{{request.user.profile_picture.url}}"
+                style="width: 30px; height: 30px"
+                alt=""
+              />
+            </a>
+            <ul
+              class="dropdown-list"
+              style="padding: 5px 3px; width: 160px; color: white"
+            >
+              <li class="dropdown-item">
+                <a href="{% url 'pages:order' %}" style="color: black"
+                  >My Orders</a
+                >
+              </li>
+
+              <li
+                class="dropdown-item"
+                style="background-color: black; margin-top: 5px"
+              >
+                <a href="{% url 'logout' %}" style="color: white">Logout</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        {% else %}
+        <a
+          href="{% url 'login' %}"
+          style="color: white; background: var(--black); padding: 5px 10px"
+          >Login</a
+        >
+        {% endif %}
+
+        <button class="action-btn">
+          <a href="{% url 'pages:cart' %}" style="color: white">
+            <ion-icon name="cart-outline"></ion-icon>
+            <span class="count product__count"
+              >{{request.session.cart|length}}</span
+            >
+          </a>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+  <nav class="desktop-navigation-menu">
+    <div class="container">
+      <ul class="desktop-menu-category-list">
+        <li class="menu-category">
+          <a href="{% url 'pages:home' %}" class="menu-title">Home</a>
+        </li>
+
+        <li class="menu-category">
+          <a href="{% url 'pages:product-list' %}" class="menu-title">Shop</a>
+        </li>
+        {% if men_sub_category %}
+        <li class="menu-category">
+          <a href="#" class="menu-title" style="display: flex"
+            >Men's
+            <span>
+              <ion-icon name="caret-down"></ion-icon>
+            </span>
+          </a>
+
+          <ul class="dropdown-list">
+            {% for obj in men_sub_category %}
+            <li class="dropdown-item">
+              <a href="{% url 'pages:sub_category-list' obj.slug %}"
+                >{{obj.name}}</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %} {% if women_sub_category %}
+        <li class="menu-category">
+          <a href="#" class="menu-title" style="display: flex"
+            >Women's
+            <span>
+              <ion-icon name="caret-down"></ion-icon>
+            </span>
+          </a>
+
+          <ul class="dropdown-list">
+            {% for obj in women_sub_category %}
+            <li class="dropdown-item">
+              <a href="{% url 'pages:sub_category-list' obj.slug %}"
+                >{{obj.name}}</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %} {% if kid_sub_category %}
+        <li class="menu-category">
+          <a href="#" class="menu-title" style="display: flex"
+            >Kid's & Babies
+            <span>
+              <ion-icon name="caret-down"></ion-icon>
+            </span>
+          </a>
+          <ul class="dropdown-list">
+            {% for obj in kid_sub_category %}
+            <li class="dropdown-item">
+              <a href="{% url 'pages:sub_category-list' obj.slug %}"
+                >{{obj.name}}</a
+              >
+            </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% endif %}
+
+        <li class="menu-category">
+          <a href="#" class="menu-title">Blog</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="mobile-bottom-navigation">
+    <button class="action-btn" data-mobile-menu-open-btn>
+      <ion-icon name="menu-outline"></ion-icon>
+    </button>
+
+    <a href="{% url 'pages:cart' %}" class="action-btn">
+      <ion-icon name="notifications-outline"></ion-icon>
+      <span class="count" style="background-color: tomato">0</span>
+    </a>
+    <a href="{% url 'pages:home' %}" class="action-btn">
+      <ion-icon name="home-outline"></ion-icon>
+    </a>
+    <a href="{% url 'pages:cart' %}" class="action-btn">
+      <ion-icon name="cart-outline"></ion-icon>
+      <span class="count product__count">{{request.session.cart|length}}</span>
+    </a>
+
+    <a href="#" class="action-btn">
+      <ion-icon name="person-circle-outline"></ion-icon>
+    </a>
+  </div>
+
+  <nav class="mobile-navigation-menu has-scrollbar" data-mobile-menu>
+    <div class="menu-top">
+      <h2 class="menu-title">Menu</h2>
+
+      <button class="menu-close-btn" data-mobile-menu-close-btn>
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+    </div>
+
+    <ul class="mobile-menu-category-list">
+      <li class="menu-category">
+        <a href="{% url 'pages:home' %}" class="menu-title">Home</a>
+      </li>
+      <li class="menu-category">
+        <a href="{% url 'pages:product-list' %}" class="menu-title">Shop</a>
+      </li>
+      {% for c in sub_category_list %}
+      <li class="menu-category">
+        <button class="accordion-menu" data-accordion-btn>
+          <p class="menu-title">{{c.name}}</p>
+
+          <div>
+            <ion-icon name="add-outline" class="add-icon"></ion-icon>
+            <ion-icon name="remove-outline" class="remove-icon"></ion-icon>
+          </div>
+        </button>
+
+        <ul class="submenu-category-list" data-accordion>
+          {% for s in c.subcategory_set.all %}
+          <li class="submenu-category">
+            <a
+              href="{% url 'pages:sub_category-list' s.slug %}"
+              class="submenu-title"
+              >{{s.name}}</a
+            >
+          </li>
+          {% endfor %}
+        </ul>
+      </li>
+      {% endfor %}
+
+      <li class="menu-category">
+        <a href="#" class="menu-title">Blog</a>
+      </li>
+
+      <li class="menu-category">
+        <a href="#" class="menu-title">Hot Offers</a>
+      </li>
+    </ul>
+
+    <div class="menu-bottom">
+      <ul class="menu-category-list">
+        <li class="menu-category">
+          <button class="accordion-menu" data-accordion-btn>
+            <p class="menu-title">Language</p>
+
+            <ion-icon name="caret-back-outline" class="caret-back"></ion-icon>
+          </button>
+
+          <ul class="submenu-category-list" data-accordion>
+            <li class="submenu-category">
+              <a href="#" class="submenu-title">English</a>
+            </li>
+
+            <li class="submenu-category">
+              <a href="#" class="submenu-title">Bangla</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="menu-category">
+          <button class="accordion-menu" data-accordion-btn>
+            <p class="menu-title">Currency</p>
+            <ion-icon name="caret-back-outline" class="caret-back"></ion-icon>
+          </button>
+
+          <ul class="submenu-category-list" data-accordion>
+            <li class="submenu-category">
+              <a href="#" class="submenu-title">BDT ৳</a>
+            </li>
+
+            <li class="submenu-category">
+              <a href="#" class="submenu-title">USD &dollar;</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="menu-social-container">
+        <li>
+          <a href="#" class="social-link">
+            <ion-icon name="logo-facebook"></ion-icon>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="social-link">
+            <ion-icon name="logo-twitter"></ion-icon>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="social-link">
+            <ion-icon name="logo-instagram"></ion-icon>
+          </a>
+        </li>
+
+        <li>
+          <a href="#" class="social-link">
+            <ion-icon name="logo-linkedin"></ion-icon>
+          </a>
+        </li>
+      </ul>
+    </div>
+    {% csrf_token %}
+  </nav>
+</header>

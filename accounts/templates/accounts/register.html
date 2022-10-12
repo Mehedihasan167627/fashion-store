@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    {% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-store | Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,900&display=swap" rel="stylesheet">
+
+
+  <link rel="stylesheet" href="{% static 'assets/css/login_style.css'%}">
+
+  <style>
+*{
+    font-family: 'Urbanist', sans-serif;
+  }
+  </style>
+</head>
+<body>
+  
+
+<div class="container">
+
+  <div class="brand-title">E-STORE</div>
+  <form action="." method="post">
+    {% csrf_token %}
+      <div class="inputs">
+    <label> Username </label>
+    <input type="text" name="username" placeholder="User name" required/>
+    <label>EMAIL</label>
+    <input type="email" name="email" value="{{email}}" placeholder="example@test.com" required/>
+    <label>PASSWORD</label>
+    <input type="password" name="password" placeholder="******"required />
+    <label> CONFIRM PASSWORD</label>
+    <input type="password" name="confirm_password"  placeholder="******"required />
+    <p style="color:red" class="error__box"></p>
+    
+    {%for m in messages %}
+     <p style="color:red"> {{m}}</p>
+    {% endfor %}
+    <div class="submit__btn__box">
+        <button class="submit__box" type="submit" disabled>Register</button>
+    </div>
+   
+  </div>
+  </form>
+ <div class="link__box">
+  <a href="{% url 'login' %}">I  have already an account? Login</a>
+  </div>
+</div>
+<script src="{% static 'assets/js/jquery-3.2.1.min.js' %}"></script>
+<script>
+    $(document).ready(function(){
+       $(document).on("keyup","input[name='confirm_password']",function(e){
+           var password=$("input[name='password']").val()
+            var confirm=e.target.value
+            if(password==confirm){
+                $(".error__box").html("")
+                $(".submit__btn__box").html('<button class="submit__box" type="submit">Register</button>')
+            }else{
+                $(".error__box").html("Confirm password doesn't match")
+                $(".submit__btn__box").html('<button class="submit__box" type="submit" disabled>Register</button>')
+            }
+       })
+    })
+</script>
+</body>
+</html>

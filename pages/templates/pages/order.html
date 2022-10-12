@@ -1,0 +1,104 @@
+{% extends 'base.html' %} {% load static %} 
+{% load custom_filter %}
+ {% block title %} My Orders {% endblock %} 
+ 
+ {% block content %}
+<div class="product-minimal">
+  <div class="product-showcase">
+    <br />
+
+    <h2 class="title">My Orders</h2>
+    {% include 'components/message.html' %}
+
+    <div class="showcase-wrapper has-scrollbar">
+      <div class="showcase-container">
+        {% if obj_list %} {% for obj in obj_list %}
+        <div class="showcase">
+          <div class="showcase-content">
+            <span
+              style="
+                font-size: 13px;
+                font-weight: 200;
+                margin-left: 20px;
+                float: right;
+              "
+              >Placed: {{obj.created_at}}</span
+            >
+            <h4>ORDER ID: {{obj.order_id}}</h4>
+
+            <br />
+
+            {% for r in obj.results %}
+            <div style="float: left">
+              <a href="#" class="showcase-img-box">
+                <img
+                  src="{{r.image}}"
+                  alt="relaxed short full sleeve t-shirt"
+                  width="70"
+                  class="showcase-img"
+                />
+              </a>
+            </div>
+            <div>
+              <a href="#">
+                <h4 class="showcase-title">Product: {{r.name}}</h4>
+              </a>
+              <p>Price :{{r.price|currency}} x {{r.quantity}}</p>
+              <h4 class="showcase-title">
+                Sub Total :{{r.sub_total|currency}}
+              </h4>
+              <br />
+            </div>
+            {% endfor %}
+            <div class="price-box">
+              <h4>TOTAL : {{obj.total|currency}}</h4>
+
+              {% if obj.paid %}
+              <span
+                style="
+                  font-size: 13px;
+                  font-weight: 500;
+                  margin-left: 20px;
+                  color: var(--green);
+                  float: left;
+                "
+                >Received : {{obj.updated_at}}</span
+              >
+              {% endif %}
+            </div>
+
+            <button style="float: right; padding: 0px 5px">
+              {% if obj.paid %}
+              <span
+                style="
+                  font-size: 13px;
+                  color: var(--white);
+                  background: var(--green);
+                  padding: 3px 5px;
+                "
+                >completed</span
+              >
+              {% else %}
+              <span
+                style="
+                  font-size: 13px;
+                  color: var(--white);
+                  background: var(--black);
+                  padding: 3px 5px;
+                "
+                >pending...</span
+              >
+              {% endif %}
+            </button>
+          </div>
+        </div>
+        {% endfor %} {% else %} your order not found !!! <br />
+        <br />
+        <a href="{% url 'pages:product-list' %}">Buy some products</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

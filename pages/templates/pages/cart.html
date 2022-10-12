@@ -1,0 +1,191 @@
+{% extends 'base.html' %} {% load static %} {% load custom_filter %} 
+{% block title %} Cart {% endblock %} {% block content %} {% csrf_token %}
+<style>
+  .sub_total__show__box {
+    min-width: 350px !important;
+    align-items: flex-start !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .sub__total {
+    border: 1px solid var(--cultured);
+    padding: 15px 20px;
+    border-radius: 3px;
+  }
+  .procced__to__checkout {
+    width: 100%;
+    margin-top: 15px !important;
+    background-color: var(--black);
+    color: white;
+    padding: 5px 0px;
+    text-align: center;
+  }
+</style>
+<div class="product-minimal" style="justify-content: center">
+  <div class="product-showcase">
+    <br />
+    <h2 class="title">Your Cart</h2>
+    {% include 'components/message.html' %}
+    <div class="showcase-wrapper has-scrollbar">
+      <div class="showcase-container">
+        {% if obj_list %} {% for obj in obj_list %}
+        <div class="showcase" id="showcase__{{obj.slug}}">
+          <a href="#" class="showcase-img-box">
+            <img
+              src="{{obj.image.url}}"
+              alt="relaxed short full sleeve t-shirt"
+              width="70"
+              class="showcase-img"
+            />
+          </a>
+
+          <div class="showcase-content">
+            <button class="dlt__item remove__item" id="{{obj.slug}}">
+              <ion-icon
+                name="close-outline"
+                role="img"
+                class="md hydrated"
+                aria-label="close outline"
+              ></ion-icon>
+            </button>
+            <br />
+            <a href="{% url 'pages:product-detail' obj.slug %}">
+              <h4 class="showcase-title">{{obj.title}}</h4>
+            </a>
+
+            <a href="#" class="showcase-category">{{obj.sub_category.name}}</a>
+            <div class="quantity__box">
+              Quantity :
+              <button class="btn minus__btn" id="{{obj.slug}}">-</button>
+              <input
+                type="text"
+                name=""
+                disabled
+                id="quanityTextBox_{{obj.slug}}"
+                value="{{obj.cart_quantity}}"
+              />
+              <button class="btn increase__btn" id="{{obj.slug}}">+</button>
+              <span
+                id="spinner__text_{{obj.slug}}"
+                style="font-size: 20px; margin-left: 10px"
+              ></span>
+            </div>
+            <div class="price-box" style="margin-top: 5px">
+              {% if obj.discount_price %}
+              <p class="price">{{obj.discount_price|currency}}</p>
+              <del>{{obj.price|currency}}</del>
+              <span style="color: var(--green)">
+                {{obj.price|show_discount_percentage:obj.discount_price}}
+              </span>
+              {% else %}
+              <p class="price">{{obj.price|currency}}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %} {% else %}
+        <h3 style="margin-bottom: 10px; font-weight: 200">
+          Your cart is empty!!
+        </h3>
+
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- sub total show box -->
+  <div class="showcase sub_total__show__box">
+    <div class="sub__total">
+      <h3 style="font-weight: 400; margin-bottom: 5px">
+        Sub total
+        <span style="font-weight: 200; font-size: 16px">
+          Items(<span class="product__count"
+            >{{request.session.cart|length}}</span
+          >)</span
+        >
+        :
+        <span style="float: right; font-weight: 200" class="sub__total__price"
+          >{{total_price|currency}}</span
+        >
+      </h3>
+      <h3 style="font-weight: 200; font-size: 15px; margin-bottom: 5px">
+        Delivery Charges :
+        <span style="float: right; font-weight: 500">Free</span>
+      </h3>
+      <br />
+      <h3 style="font-weight: 400; margin-bottom: 10px">
+        Total :
+        <span style="float: right" class="total__price"
+          >{{total_price|currency}}</span
+        >
+      </h3>
+
+      <a href="{% url 'pages:checkout' %}" class="btn procced__to__checkout"
+        >Procced to Checkout</a
+      >
+    </div>
+  </div>
+  <!-- end sub total show box -->
+</div>
+
+{% endblock %} {% block custom_js %}
+<script>
+  $(document).ready(function () {
+    function add_and_dicrese_func(slug, sender, remove = false) {
+      var csrf = $("input[name='csrfmiddlewaretoken']").val();
+
+      if (remove == true) {
+        if (confirm("Are you sure?")) {
+          $("#spinner__text_" + slug + "").html("wait...");
+          $(".total__price").html("...");
+          $(".sub__total__price").html("...");
+
+          $.ajax({
+            url: "{% url 'pages:add-to-cart' %}",
+            method: "POST",
+            data: { csrfmiddlewaretoken: csrf, slug: slug, sender: "remove" },
+            success: function (response) {
+              $("#showcase__" + slug + "").fadeOut(100);
+              $(".product__count").html(response.item_count);
+              $(".total__price").html(response.total_price);
+              $(".sub__total__price").html(response.total_price);
+            },
+          });
+        } else {
+          return false;
+        }
+      } else {
+        $("#spinner__text_" + slug + "").html("wait...");
+        $(".total__price").html("...");
+        $(".sub__total__price").html("...");
+        $.ajax({
+          url: "{% url 'pages:add-to-cart' %}",
+          method: "POST",
+          data: { csrfmiddlewaretoken: csrf, slug: slug, sender: sender },
+          success: function (response) {
+            $("#quanityTextBox_" + slug + "").val(response.quantity);
+            $("#spinner__text_" + slug + "").html("");
+            $(".total__price").html(response.total_price);
+            $(".sub__total__price").html(response.total_price);
+          },
+        });
+      }
+    }
+
+    $(document).on("click", ".increase__btn", function () {
+      var slug = $(this).attr("id");
+      add_and_dicrese_func(slug, "increase");
+    });
+
+    $(document).on("click", ".minus__btn", function () {
+      var slug = $(this).attr("id");
+      add_and_dicrese_func(slug, "dicrease");
+    });
+
+    $(document).on("click", ".remove__item", function () {
+      var slug = $(this).attr("id");
+      add_and_dicrese_func(slug, "remove", true);
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %} {% load static %} {% load custom_filter %}
+ {% block title %} Review {% endblock %} {% block content %}
+<style>
+
+  #id_description{
+   outline: 0;
+    background: #f2f2f2;
+ 
+    border: 0;
+    caret-color: #4f5d7e;
+    margin: 10px 0px;
+    padding: 10px 10px;
+    box-sizing: border-box;
+    font-size: 17px;
+  }
+  .submit__btn{
+      padding:5px 7px;
+      background:var(--black);
+      color:white;
+  }
+</style>
+<div class="product-minimal" style="justify-content: center">
+  <div class="product-showcase">
+    <br />
+    <h2 class="title">Review</h2>
+    {% include 'components/message.html' %}
+    <div class="showcase-wrapper has-scrollbar">
+      <div class="showcase-container">
+        <div class="showcase">
+          <a href="#" class="showcase-img-box">
+            <img
+              src="{{obj.image.url}}"
+              alt="relaxed short full sleeve t-shirt"
+              width="70"
+              class="showcase-img"
+            />
+          </a>
+
+          <div class="showcase-content">
+            <br />
+            <a href="{% url 'pages:product-detail' obj.slug %}">
+              <h4 class="showcase-title">{{obj.title}}</h4>
+            </a>
+
+            <a href="#" class="showcase-category">{{obj.sub_category.name}}</a>
+          </div>
+        </div>
+        <div class="showcase">
+          <form action="." method="POST">
+            {% csrf_token %}
+            <div class="customer__info">
+                 {% for field in form %}
+                 <div class="form__box">
+                    <Label>{{field.name}}: </Label>
+                   <span style="float:right"> {{field}}</span>
+                </div>
+                 {% endfor %}
+
+              </div>
+            </div>
+            <button class="submit__btn">Submit</button>
+              
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  {% endblock %}
+</div>

@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+ {% load static %}
+  {% load custom_filter %}
+ {% block title %} Detail of {{obj.slug}} {% endblock %} 
+ {% block content %}
+  {% csrf_token %}
+<style>
+  .small__img {
+    width: 70px !important;
+    height: 70px !important;
+    cursor: pointer;
+  }
+</style>
+<div class="product-featured">
+  <h2 class="title" style="display: flex">
+    <a href="{% url 'pages:product-list' %}">Products ></a> {{obj.title}}
+  </h2>
+
+  <div class="showcase-wrapper has-scrollbar">
+    <div class="showcase-container">
+      <div class="showcase mb-2">
+        <div>
+          <div class="showcase-banner">
+            <img
+              src="{{obj.thumbnail.url}}"
+              alt="{{obj.title}}"
+              class="showcase-img main__img"
+            />
+          </div>
+          <div style="display: flex; overflow-x: auto" class="has-scrollbar">
+            <img src="{{obj.thumbnail.url}}" class="showcase-img small__img" />
+            {% for s in obj.productimage_set.all %}
+            <img src="{{s.image.url}}" class="showcase-img small__img" />
+
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="showcase-content">
+          <div class="showcase-rating">
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star"></ion-icon>
+            <ion-icon name="star-outline"></ion-icon>
+            <ion-icon name="star-outline"></ion-icon>
+          </div>
+
+          <a>
+            <h3 class="showcase-title">{{obj.title}}</h3>
+          </a>
+
+          <p class="showcase-desc">{{obj.description}}</p>
+
+          <div class="price-box">
+            {% if obj.discount_price %}
+            <p class="price">{{obj.discount_price|currency}}</p>
+            <del>{{obj.price|currency}}</del>
+            <span style="color: white; background: green; padding: 0px 5px">
+              {{obj.price|show_discount_percentage:obj.discount_price}}
+            </span>
+            {% else %}
+            <p class="price">{{obj.price|currency}}</p>
+            {% endif %}
+          </div>
+          <div class="price-box">
+            Quantity :
+            <input
+              type="number"
+              name=""
+              value="1"
+              min="1"
+              id="quantity__box"
+              style="width: 50px; text-align: center"
+            />
+          </div>
+
+          <button class="add-cart-btn add__to__cart__btn" id="{{obj.slug}}">
+            add to cart
+          </button>
+          <!--
+                    - NOTIFICATION TOAST
+                  -->
+
+          <div class="notification__toast" style="display: none">
+            <button class="toast__close__btn">
+              <ion-icon name="close-outline"></ion-icon>
+            </button>
+            <div class="toast__detail">
+              <p class="toast__title"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--rating start -->
+<div style="display: flex">
+  <h3 style="flex: 1" id="reviews">Customer Reviews</h3>
+  <a
+    href="{% url 'pages:product-review' obj.slug %}"
+    class="btn"
+    style="border: 1px solid var(--black)"
+    >Write a review</a
+  >
+</div>
+<br />
+<div class="review__section">
+  {% if review_list %} {% for rv in review_list %}
+  <div class="review__box">
+    <div class="review__header">
+      <div class="review__header__left">
+        <img
+          src="{{rv.review_by.profile_picture.url}}"
+          style="width: 45px; height: 45px; border-radius: 5px"
+          alt=""
+        />
+        <p style="margin-left: 10px; font-weight: 300">
+          {{rv.review_by.first_name}} {{rv.review_by.last_name}}<br />
+          <span style="font-weight: 500; font-size: 15px"
+            >{{rv.review_by.username}}</span
+          >
+        </p>
+
+        <div class="showcase-rating" style="display: flex; color: orange">
+          {{rv.star|star_count}}
+        </div>
+      </div>
+    </div>
+    <div class="review__description">
+      <p>{{rv.description}}</p>
+    </div>
+  </div>
+  <br /><br />
+  {% endfor %}
+  <div style="display: flex">
+    {% if review_list.has_previous %}
+    <a href="?page={{review_list.previous_page_number}}#reviews" class="btn">
+      Previous
+    </a>
+
+    {% endif %}
+
+    <span class="current">
+      Page {{ review_list.number }} of {{ review_list.paginator.num_pages }}
+    </span>
+
+    {% if review_list.has_next %}
+    <a href="?page={{review_list.next_page_number }}#reviews" class="btn">
+      Next
+    </a>
+
+    {% endif %} {% else %}
+    <h3 style="font-weight: 300">Reviews Not found!!!</h3>
+    {% endif %}
+  </div>
+</div>
+<!--rating end-->
+
+{% endblock %} {% block custom_js %}
+
+<script>
+  $(document).ready(function () {
+    $(".add__to__cart__btn").on("click", function () {
+      $(".toast__title").html("wait...");
+      var slug = $(this).attr("id");
+      var quantity = $("#quantity__box").val();
+      var csrf = $("input[name='csrfmiddlewaretoken']").val();
+      $.ajax({
+        url: "{% url 'pages:add-to-cart' %}",
+        method: "POST",
+        data: {
+          csrfmiddlewaretoken: csrf,
+          slug: slug,
+          quantity: quantity,
+          sender: "detail_page",
+        },
+        success: function (response) {
+          $(".toast__title").html(
+            "added in your cart & total quantity (" + response.quantity + ")"
+          );
+          $(".notification__toast").css("display", "block");
+          $(".product__count").html(response.item_count);
+        },
+      });
+    });
+
+    $(".toast__close__btn").on("click", function () {
+      $(".notification__toast").fadeOut(500);
+    });
+
+    $(document).on("click", ".small__img", function () {
+      var src = $(this).attr("src");
+      $(".main__img").attr({ src: src });
+    });
+  });
+</script>
+{% endblock %}

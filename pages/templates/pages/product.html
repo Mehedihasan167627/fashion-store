@@ -1,0 +1,247 @@
+{% extends 'base.html' %} 
+{% load static %}
+ {% load custom_filter %}
+ {% block title %} All Products {% endblock %} 
+ 
+ {% block content %}
+<style>
+  [data-pagination],
+  [data-pagination] *,
+  [data-pagination] *:before,
+  [data-pagination] *:after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-kerning: auto;
+  }
+  [data-pagination] {
+    font-size: 8pt;
+    line-height: 1;
+    font-weight: 400;
+    font-family: "Open Sans", "Source Sans Pro", Roboto, "HelveticaNeue-Light",
+      "Helvetica Neue Light", "Helvetica Neue", "Myriad Pro", "Segoe UI", Myriad,
+      Helvetica, "Lucida Grande", "DejaVu Sans Condensed", "Liberation Sans",
+      "Nimbus Sans L", Tahoma, Geneva, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+    margin: 1em auto;
+    text-align: center;
+    transition: font-size 0.2s ease-in-out;
+  }
+  [data-pagination] ul {
+    list-style-type: none;
+    display: inline;
+    font-size: 100%;
+    margin: 0;
+    padding: 0.5em;
+  }
+  [data-pagination] ul li {
+    display: inline-block;
+    font-size: 100%;
+    width: auto;
+    border-radius: 3px;
+  }
+  [data-pagination] > a {
+    font-size: 140%;
+  }
+  [data-pagination] a {
+    color: #777;
+    font-size: 100%;
+    padding: 0.5em;
+  }
+  [data-pagination] a:focus,
+  [data-pagination] a:hover {
+    color: #f60;
+  }
+  [data-pagination] li.current {
+    background: rgba(0, 0, 0, 0.1);
+  }
+  /* Disabled & Hidden Styles */
+  [data-pagination] .disabled,
+  [data-pagination] [hidden],
+  [data-pagination] [disabled] {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  @media (min-width: 350px) {
+    [data-pagination] {
+      font-size: 10pt;
+    }
+  }
+  @media (min-width: 500px) {
+    [data-pagination] {
+      font-size: 12pt;
+    }
+  }
+  @media (min-width: 700px) {
+    [data-pagination] {
+      font-size: 14pt;
+    }
+  }
+  @media (min-width: 900px) {
+    [data-pagination] {
+      font-size: 16pt;
+    }
+  }
+</style>
+{% csrf_token %}
+<div class="product-main" id="products">
+  <h2 class="title">
+    {% if sub_category %} All {{sub_category}}
+     {% else %} All Products {% endif%} 
+     {% include 'components/message.html' %}
+  </h2>
+
+  {% if obj_list %}
+  <div class="product-grid">
+    {% for obj in obj_list %}
+    <div class="showcase">
+      <div class="showcase-banner">
+        <img
+          src="{{obj.image.url}}"
+          alt="{{obj.title}}"
+          width="300"
+          class="product-img default"
+        />
+        <img
+          src="{{obj.image.url}}"
+          alt="{{obj.title}}"
+          width="300"
+          class="product-img hover"
+        />
+
+        <div class="showcase-actions">
+          <button class="btn-action">
+            <ion-icon name="heart-outline"></ion-icon>
+          </button>
+
+          <button class="btn-action">
+            <ion-icon name="eye-outline"></ion-icon>
+          </button>
+
+          <button class="btn-action">
+            <ion-icon name="repeat-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="showcase-content">
+        <a
+          href="{% url 'pages:sub_category-list' obj.sub_category.slug %}"
+          class="showcase-category"
+          >{{obj.sub_category}}</a
+        >
+
+        <a href="{% url 'pages:product-detail' obj.slug %}">
+          <h3 class="showcase-title">{{obj.title}}</h3>
+        </a>
+
+        <div class="price-box" style="float: left">
+          {% if obj.discount_price %}
+          <p class="price">{{obj.discount_price|currency}}</p>
+          <del>{{obj.price|currency}}</del>
+          <span style="color: white; background: green; padding: 0px 5px">
+            {{obj.price|show_discount_percentage:obj.discount_price}}
+          </span>
+
+          {% else %}
+          <p class="price">{{obj.price|currency}}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <button
+        class="btn-action add__to__cart__btn add__to__cart__btn__{{obj.slug}}"
+        id="{{obj.slug}}"
+        {% if obj.is_added_cart %} style="width:100%;color:white;display:flex;background: var(--green);"
+        {% else %} style="width: 100%;color: white;display: flex;background: var(--black);"
+{%endif%}
+      >
+        <p style="width: 80%; text-align: left">Add to cart</p>
+        <p style="display: flex">
+          <ion-icon name="bag-add-outline"></ion-icon>
+
+          <span
+            class="single__product__count_{{obj.slug}}"
+            style="margin-left: 4px"
+          >
+            {% if obj.is_added_cart %} ({{obj.cart_quantity}}) {% endif %}
+          </span>
+        </p>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+  <nav data-pagination>
+    <a href="#" disabled><i class="ion-chevron-left"></i></a>
+    <ul>
+      {% if obj_list.has_previous %}
+      <li>
+        <a href="?page={{obj_list.previous_page_number}}#products">
+          <ion-icon
+            name="caret-back-outline"
+            style="font-size: 40px; margin-bottom: -20px"
+          ></ion-icon>
+        </a>
+      </li>
+      {% endif %}
+      <li>
+        <span class="current">
+          Page {{ obj_list.number }} of {{ obj_list.paginator.num_pages }}
+        </span>
+      </li>
+
+      {% if obj_list.has_next %}
+      <li>
+        <a href="?page={{obj_list.next_page_number }}#products">
+          <ion-icon
+            name="caret-forward"
+            style="font-size: 40px; margin-bottom: -20px"
+          ></ion-icon>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  {% else %}
+  <h2>Product not Found!!</h2>
+  {% endif %}
+</div>
+
+{% endblock %} {% block custom_js %}
+
+<script>
+  $(document).ready(function () {
+    $(".add__to__cart__btn").on("click", function () {
+      var slug = $(this).attr("id");
+      var quantity = 1;
+      var csrf = $("input[name='csrfmiddlewaretoken']").val();
+      $(".single__product__count_" + slug + "").html("...");
+      $.ajax({
+        url: "{% url 'pages:add-to-cart' %}",
+        method: "POST",
+        data: {
+          csrfmiddlewaretoken: csrf,
+          slug: slug,
+          quantity: quantity,
+          sender: "detail_page",
+        },
+        success: function (response) {
+          $(".product__count").html(response.item_count);
+          $(".single__product__count_" + slug + "").html(
+            "(" + response.quantity + ")"
+          );
+          $(".add__to__cart__btn__" + slug + "").css(
+            "background",
+            "var(--green)"
+          );
+        },
+      });
+    });
+  });
+</script>
+
+{% endblock %}
