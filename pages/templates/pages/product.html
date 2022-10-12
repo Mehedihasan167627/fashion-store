@@ -105,12 +105,21 @@
           width="300"
           class="product-img default"
         />
+       {% if obj.second_image %}
         <img
-          src="{{obj.image.url}}"
+          src="{{obj.second_image.url}}"
           alt="{{obj.title}}"
           width="300"
           class="product-img hover"
         />
+        {% else %}
+         <img
+          src="{{obj.image.url}}"
+          alt="{{obj.title}}"
+          width="300"
+          class="product-img default"
+        />
+       {% endif %}
 
         <div class="showcase-actions">
           <button class="btn-action">

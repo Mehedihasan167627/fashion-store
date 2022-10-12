@@ -29,7 +29,7 @@
           </div>
           <div style="display: flex; overflow-x: auto" class="has-scrollbar">
             <img src="{{obj.thumbnail.url}}" class="showcase-img small__img" />
-            {% for s in obj.productimage_set.all %}
+            {% for s in obj.product.all %}
             <img src="{{s.image.url}}" class="showcase-img small__img" />
 
             {% endfor %}

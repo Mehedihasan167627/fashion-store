@@ -1,4 +1,6 @@
-from .models import Category,Product, SubCategory
+import ast
+from .models import Category,Product, SubCategory,Order 
+import json 
 
 def sub_category_list(request):
     sub_category_list=Category.objects.all()
@@ -28,6 +30,7 @@ def kid_sub_category(request):
 
 
 def best_sellers(request):
+ 
     queryset=Product.objects.filter(is_active=True).order_by("-id")[:4]
     return {"best_sellers":queryset}
 

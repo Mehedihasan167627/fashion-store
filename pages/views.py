@@ -6,6 +6,7 @@ from products.forms import ProductReviewForm
 
 from products.models import Order, Product ,Address, Review, SubCategory
 from django.contrib import messages
+from django.db.models import Q 
 from .utils import*
 from django.core.paginator import Paginator
 
@@ -45,7 +46,7 @@ class ProductListView(View):
     def get(self,request):
         cart=request.session.get("cart")
         if request.GET.get("qry"):
-            queryset=Product.objects.filter(title__istartswith=request.GET.get("qry"))
+            queryset=Product.objects.filter(Q(title__icontains=request.GET.get("qry")))
         else:
             queryset=Product.objects.filter(is_active=True).order_by("-id")
         page_number=request.GET.get("page")

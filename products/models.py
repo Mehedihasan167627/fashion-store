@@ -50,10 +50,10 @@ class Product(BaseModel):
     price=models.PositiveBigIntegerField()
     discount_price=models.PositiveBigIntegerField(blank=True,null=True)
     description=models.TextField()
-    MEN_OR_WOMEN=(("Men's","Men's"),("Women's","Women's"),("Kid's","Kid's"))
-    men_or_women=models.CharField(max_length=7,choices=MEN_OR_WOMEN)
+    MEN_OR_WOMEN=(("Men's","Men's"),("Women's","Women's"),("Kid's","Kid's"),("Everyone","Everyone"))
+    men_or_women=models.CharField(max_length=8,choices=MEN_OR_WOMEN)
     is_active=models.BooleanField(default=True)
-  
+    sale_count=models.PositiveBigIntegerField(default=0)
 
     def __str__(self) -> str:
         return self.title 
@@ -82,7 +82,7 @@ class Product(BaseModel):
 
 
 class ProductImage(models.Model):
-    product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    product=models.ForeignKey(Product,related_name='product',on_delete=models.CASCADE)
     image=models.ImageField(upload_to="products/uploads/products/sub-images")
 
     def __str__(self):

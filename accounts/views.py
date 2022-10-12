@@ -66,6 +66,7 @@ class RegisterView(View):
                 password=make_password(password),
                 user_type="3"
                 )
+                
             user.save()
             if user:
                 messages.success(request,"Your account created successfully!!")
