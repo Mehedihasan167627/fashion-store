@@ -35,6 +35,7 @@ def cart_obj_and_total(cart):
 #00 index page
 class HomeView(View):
     def get(self,request):
+        return redirect("pages:product-list")
         sub_cat=SubCategory.objects.all()
         context={
             "sub_cat":sub_cat,
