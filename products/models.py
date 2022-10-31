@@ -46,7 +46,7 @@ class SubCategory(BaseModel):
 class Product(BaseModel):
     sub_category=models.ForeignKey(SubCategory,on_delete=models.CASCADE)
     title=models.CharField(max_length=255,unique=True)
-    thumbnail=models.ImageField(upload_to="products/uploads/products")
+    thumbnail=models.ImageField(upload_to="media")
     price=models.PositiveBigIntegerField()
     discount_price=models.PositiveBigIntegerField(blank=True,null=True)
     description=models.TextField()
@@ -83,7 +83,7 @@ class Product(BaseModel):
 
 class ProductImage(models.Model):
     product=models.ForeignKey(Product,related_name='product',on_delete=models.CASCADE)
-    image=models.ImageField(upload_to="products/uploads/products/sub-images")
+    image=models.ImageField(upload_to="media")
 
     def __str__(self):
         return self.product.title

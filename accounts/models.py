@@ -15,8 +15,8 @@ class CustomUser(AbstractUser):
         ("3","Customer"),
     )
     user_type=models.CharField(max_length=1,choices=USER_TYPE) 
-    profile_picture=models.ImageField(upload_to="accounts/uploads/profiles",
-           default="accounts/uploads/no_avatar.png")
+    profile_picture=models.ImageField(upload_to="media",
+           default="media/no_avatar.png")
     otp=models.CharField(max_length=6,blank=True,null=True)
    
     objects=UserModel()
